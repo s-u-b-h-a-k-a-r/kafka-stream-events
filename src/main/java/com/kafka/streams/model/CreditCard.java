@@ -1,4 +1,4 @@
-package com.kafka.streams;
+package com.kafka.streams.model;
 
 import javaslang.API;
 import javaslang.Predicates;
@@ -36,7 +36,7 @@ public class CreditCard {
         this.uuid = uuid;
     }
 
-    void assignLimit(BigDecimal amount) { // command
+    public void assignLimit(BigDecimal amount) { // command
         if (limitAlreadyAssigned()) { // invariant
             throw new IllegalStateException(); // NACK
         }
@@ -54,7 +54,7 @@ public class CreditCard {
         return limit != null;
     }
 
-    void withdraw(BigDecimal amount) {
+    public void withdraw(BigDecimal amount) {
         if (notEnoughMoneyToWithdraw(amount)) {
             throw new IllegalStateException();
         }
@@ -72,7 +72,7 @@ public class CreditCard {
         return availableLimit().compareTo(amount) < 0;
     }
 
-    void repay(BigDecimal amount) {
+    public void repay(BigDecimal amount) {
         cardRepaid(new CardRepaid(uuid, amount, new Date()));
     }
 
@@ -94,7 +94,7 @@ public class CreditCard {
         return ofAll(events).foldLeft(new CreditCard(uuid), CreditCard::handle);
     }
 
-    CreditCard handle(DomainEvent domainEvent) {
+    public CreditCard handle(DomainEvent domainEvent) {
         return API.Match(domainEvent).of(Case(Predicates.instanceOf(LimitAssigned.class), this::limitAssigned),
                 Case(Predicates.instanceOf(CardRepaid.class), this::cardRepaid),
                 Case(Predicates.instanceOf(CardWithdrawn.class), this::cardWithdrawn)

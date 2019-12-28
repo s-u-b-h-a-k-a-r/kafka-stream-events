@@ -16,6 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kafka.streams.configuration.KafkaConfiguration;
+import com.kafka.streams.model.CreditCard;
+import com.kafka.streams.repository.Repository;
+
 @SpringBootApplication
 @EnableScheduling
 public class EventsourcingApplication {

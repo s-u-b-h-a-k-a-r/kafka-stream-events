@@ -1,4 +1,4 @@
-package com.kafka.streams;
+package com.kafka.streams.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +25,8 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.kafka.streams.events.DomainEvent;
+import com.kafka.streams.model.CreditCard;
+import com.kafka.streams.repository.Repository;
 
 @Configuration
 @EnableKafka

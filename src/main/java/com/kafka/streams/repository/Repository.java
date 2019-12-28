@@ -1,9 +1,10 @@
-package com.kafka.streams;
+package com.kafka.streams.repository;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import com.kafka.streams.events.DomainEvent;
+import com.kafka.streams.model.CreditCard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Repository {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    void save(CreditCard creditCard) {
+    public void save(CreditCard creditCard) {
         List<DomainEvent> currentStream = eventStreams.getOrDefault(creditCard.getUuid(), new ArrayList<>());
         List<DomainEvent> newEvents = creditCard.getDirtyEvents();
         currentStream.addAll(newEvents);
