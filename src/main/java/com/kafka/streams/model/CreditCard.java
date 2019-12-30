@@ -1,21 +1,25 @@
 package com.kafka.streams.model;
 
-import javaslang.API;
-import javaslang.Predicates;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import static javaslang.API.Case;
+import static javaslang.collection.List.ofAll;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import com.kafka.streams.events.CardRepaid;
 import com.kafka.streams.events.CardWithdrawn;
 import com.kafka.streams.events.DomainEvent;
 import com.kafka.streams.events.LimitAssigned;
 
-import static javaslang.API.Case;
-import static javaslang.collection.List.ofAll;
+import javaslang.API;
+import javaslang.Predicates;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @ToString
