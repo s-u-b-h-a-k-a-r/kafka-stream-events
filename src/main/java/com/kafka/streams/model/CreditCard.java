@@ -1,7 +1,6 @@
 package com.kafka.streams.model;
 
 import static javaslang.API.Case;
-import static javaslang.collection.List.ofAll;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -94,15 +93,9 @@ public class CreditCard {
         dirtyEvents.clear();
     }
 
-    public static CreditCard recreate(UUID uuid, List<DomainEvent> events) {
-        return ofAll(events).foldLeft(new CreditCard(uuid), CreditCard::handle);
-    }
-
     public CreditCard handle(DomainEvent domainEvent) {
         return API.Match(domainEvent).of(Case(Predicates.instanceOf(LimitAssigned.class), this::limitAssigned),
                 Case(Predicates.instanceOf(CardRepaid.class), this::cardRepaid),
-                Case(Predicates.instanceOf(CardWithdrawn.class), this::cardWithdrawn)
-
-        );
+                Case(Predicates.instanceOf(CardWithdrawn.class), this::cardWithdrawn));
     }
 }

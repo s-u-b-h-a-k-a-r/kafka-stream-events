@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class Repository {
-
     public static final String S1P_CREDIT_CARDS_EVENTS = "s1p-credit-cards-events";
     private final KafkaTemplate<String, DomainEvent> kafkaTemplate;
     private final Map<UUID, List<DomainEvent>> eventStreams = new ConcurrentHashMap<>();
@@ -30,9 +29,5 @@ public class Repository {
         eventStreams.put(creditCard.getUuid(), currentStream);
         newEvents.forEach(domainEvent -> kafkaTemplate.send(S1P_CREDIT_CARDS_EVENTS, domainEvent));
         creditCard.eventsFlushed();
-    }
-
-    CreditCard load(UUID uuid) {
-        return CreditCard.recreate(uuid, eventStreams.getOrDefault(uuid, new ArrayList<>()));
     }
 }

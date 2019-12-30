@@ -88,5 +88,4 @@ public class KafkaConfiguration {
         return builder.stream(Repository.S1P_CREDIT_CARDS_EVENTS, Consumed.with(Serdes.String(), domainEventSerde))
                 .groupBy((s, domainEvent) -> domainEvent.aggregateUUID().toString()).aggregate(in, ag, ma);
     }
-
 }
