@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -66,9 +67,12 @@ public class KafkaConfiguration {
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration streamsConfig() {
+    	Serde<CreditCard> creditCardSerde = new JsonSerde<>(CreditCard.class);
         Map<String, Object> config = new HashMap<>();
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, appId);
+        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class.getName());
+        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, creditCardSerde.getClass().getName());
         return new KafkaStreamsConfiguration(config);
     }
 
