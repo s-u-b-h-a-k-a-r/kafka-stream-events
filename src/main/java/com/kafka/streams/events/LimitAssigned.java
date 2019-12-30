@@ -9,8 +9,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class LimitAssigned implements DomainEvent {
-
+public class LimitAssigned implements BaseEvent {
     private UUID uuid;
     private Date date;
     private BigDecimal limit;

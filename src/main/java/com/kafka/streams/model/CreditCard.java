@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.kafka.streams.events.CardRepaid;
 import com.kafka.streams.events.CardWithdrawn;
-import com.kafka.streams.events.DomainEvent;
+import com.kafka.streams.events.BaseEvent;
 import com.kafka.streams.events.LimitAssigned;
 
 import javaslang.API;
@@ -29,21 +29,20 @@ public class CreditCard {
     private BigDecimal limit;
     private BigDecimal used = BigDecimal.ZERO;
 
-    public List<DomainEvent> getDirtyEvents() {
+    public List<BaseEvent> getDirtyEvents() {
         return Collections.unmodifiableList(dirtyEvents);
     }
 
-    private final List<DomainEvent> dirtyEvents = new ArrayList<>();
+    private final List<BaseEvent> dirtyEvents = new ArrayList<>();
 
     public CreditCard(UUID uuid) {
         this.uuid = uuid;
     }
 
-    public void assignLimit(BigDecimal amount) { // command
-        if (limitAlreadyAssigned()) { // invariant
-            throw new IllegalStateException(); // NACK
+    public void assignLimit(BigDecimal amount) {
+        if (limitAlreadyAssigned()) {
+            throw new IllegalStateException();
         }
-        // ACK
         limitAssigned(new LimitAssigned(uuid, new Date(), amount));
     }
 
@@ -93,9 +92,11 @@ public class CreditCard {
         dirtyEvents.clear();
     }
 
-    public CreditCard handle(DomainEvent domainEvent) {
-        return API.Match(domainEvent).of(Case(Predicates.instanceOf(LimitAssigned.class), this::limitAssigned),
-                Case(Predicates.instanceOf(CardRepaid.class), this::cardRepaid),
-                Case(Predicates.instanceOf(CardWithdrawn.class), this::cardWithdrawn));
+    public CreditCard handle(BaseEvent domainEvent) {
+        return API.Match(domainEvent).of(
+                    Case(Predicates.instanceOf(LimitAssigned.class), this::limitAssigned),
+                    Case(Predicates.instanceOf(CardRepaid.class), this::cardRepaid),
+                    Case(Predicates.instanceOf(CardWithdrawn.class), this::cardWithdrawn)
+                );
     }
 }

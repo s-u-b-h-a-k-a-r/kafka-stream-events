@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class CardRepaid implements DomainEvent {
+public class CardRepaid implements BaseEvent {
     private UUID uuid;
     private BigDecimal amount;
     private Date date;

@@ -22,16 +22,16 @@ import com.kafka.streams.repository.Repository;
 
 @SpringBootApplication
 @EnableScheduling
-public class EventsourcingApplication {
+public class KafkaStreamsApplication {
 
     private final Repository repository;
 
-    public EventsourcingApplication(Repository repository) {
+    public KafkaStreamsApplication(Repository repository) {
         this.repository = repository;
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(EventsourcingApplication.class, args);
+        SpringApplication.run(KafkaStreamsApplication.class, args);
     }
 
     @Scheduled(fixedRate = 2000)
@@ -42,7 +42,6 @@ public class EventsourcingApplication {
         card.repay(BigDecimal.TEN);
         repository.save(card);
     }
-
 
 }
 
@@ -58,15 +57,10 @@ class CreditCardsController {
     @GetMapping("/cards")
     List<CreditCard> creditCardList() {
         List<CreditCard> cards = new ArrayList<>();
-        ReadOnlyKeyValueStore<String, CreditCard> store = kStreamBuilderFactoryBean
-                .getKafkaStreams()
-                .store(KafkaConfiguration.S1P_SNAPSHOTS_FOR_CARDS, keyValueStore());
-        
-        
-        store.all()
-                .forEachRemaining(
-                        stringCreditCardKeyValue -> cards.add(stringCreditCardKeyValue.value)
-                );
-        return  cards;
+        ReadOnlyKeyValueStore<String, CreditCard> store = kStreamBuilderFactoryBean.getKafkaStreams()
+                .store(KafkaConfiguration.SNAPSHOTS_FOR_CARDS, keyValueStore());
+
+        store.all().forEachRemaining(stringCreditCardKeyValue -> cards.add(stringCreditCardKeyValue.value));
+        return cards;
     }
 }

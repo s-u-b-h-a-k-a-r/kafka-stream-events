@@ -29,7 +29,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerde;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.kafka.streams.events.DomainEvent;
+import com.kafka.streams.events.BaseEvent;
 import com.kafka.streams.model.CreditCard;
 import com.kafka.streams.repository.Repository;
 
@@ -38,7 +38,7 @@ import com.kafka.streams.repository.Repository;
 @EnableKafkaStreams
 public class KafkaConfiguration {
 
-    public static final String S1P_SNAPSHOTS_FOR_CARDS = "s1p-snapshots-for-cards";
+    public static final String SNAPSHOTS_FOR_CARDS = "snapshots-for-cards";
 
     @Value("${streams.app.id}")
     private String appId;
@@ -47,12 +47,12 @@ public class KafkaConfiguration {
     private String kafkaBrokers;
 
     @Bean
-    KafkaTemplate<String, DomainEvent> kafkaTemplate() {
+    KafkaTemplate<String, BaseEvent> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    ProducerFactory<String, DomainEvent> producerFactory() {
+    ProducerFactory<String, BaseEvent> producerFactory() {
         return new DefaultKafkaProducerFactory<>(config());
     }
 
@@ -74,18 +74,18 @@ public class KafkaConfiguration {
 
     @Bean
     KTable<String, CreditCard> kTable(StreamsBuilder builder) {
-        Serde<DomainEvent> domainEventSerde = new JsonSerde<>(DomainEvent.class);
+        Serde<BaseEvent> domainEventSerde = new JsonSerde<>(BaseEvent.class);
         Serde<CreditCard> creditCardSerde = new JsonSerde<>(CreditCard.class);
 
-        Aggregator<String, DomainEvent, CreditCard> ag = (String s, DomainEvent domainEvent,
+        Aggregator<String, BaseEvent, CreditCard> ag = (String s, BaseEvent domainEvent,
                 CreditCard creditCard) -> creditCard.handle(domainEvent);
         Initializer<CreditCard> in = () -> new CreditCard();
 
         Materialized<String, CreditCard, KeyValueStore<Bytes, byte[]>> ma = Materialized
-                .<String, CreditCard, KeyValueStore<Bytes, byte[]>>as(S1P_SNAPSHOTS_FOR_CARDS)
-                .withKeySerde(Serdes.String()).withValueSerde(creditCardSerde);
+                .<String, CreditCard, KeyValueStore<Bytes, byte[]>>as(SNAPSHOTS_FOR_CARDS).withKeySerde(Serdes.String())
+                .withValueSerde(creditCardSerde);
 
-        return builder.stream(Repository.S1P_CREDIT_CARDS_EVENTS, Consumed.with(Serdes.String(), domainEventSerde))
+        return builder.stream(Repository.CREDIT_CARDS_EVENTS, Consumed.with(Serdes.String(), domainEventSerde))
                 .groupBy((s, domainEvent) -> domainEvent.aggregateUUID().toString()).aggregate(in, ag, ma);
     }
 }
